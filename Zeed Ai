@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZEED | Professional AI Tool Vault v6.0</title>
+    <style>
+        :root {
+            --bg: #f8fafc; --card: #ffffff; --text: #0f172a;
+            --muted: #64748b; --accent: #2563eb; --border: #e2e8f0; 
+            --radius: 20px; --danger: #ef4444; --success: #10b981; --info: #3b82f6;
+        }
+        
+        body.dark {
+            --bg: #0f172a; --card: #1e293b; --text: #f1f5f9;
+            --muted: #94a3b8; --accent: #38bdf8; --border: #334155;
+        }
+
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 140px; transition: 0.3s; }
+        
+        nav { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 20px; height: 75px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(8px); }
+        .brand { display: flex; align-items: center; gap: 12px; font-weight: 900; color: var(--accent); letter-spacing: -1.5px; font-size: 1.8rem; text-transform: uppercase; }
+        .logo-svg { height: 48px; width: 48px; fill: var(--accent); transition: 0.3s ease; }
+        .logo-svg path { stroke: var(--accent); }
+        body.dark .logo-svg { filter: drop-shadow(0 0 10px var(--accent)); }
+
+        .nav-items { display: flex; gap: 5px; }
+        .nav-items button { background: none; border: none; padding: 10px 15px; font-weight: 700; color: var(--muted); cursor: pointer; border-radius: 12px; transition: 0.2s; }
+        .nav-items button.active { background: var(--accent); color: white; }
+
+        .wrapper { max-width: 1000px; margin: 30px auto; padding: 0 15px; }
+        .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        
+        /* Legal/Docs Styling */
+        .legal-box { font-size: 0.85rem; color: var(--muted); line-height: 1.6; background: var(--bg); padding: 20px; border-radius: 12px; margin-top: 15px; max-height: 300px; overflow-y: auto; border: 1px solid var(--border); }
+        .legal-header { color: var(--text); font-weight: 800; margin-top: 20px; }
+
+        .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; }
+        .app-card { background: var(--card); border: 1px solid var(--border); padding: 25px; border-radius: var(--radius); text-align: center; transition: 0.3s; position: relative; }
+        .app-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        
+        .btn { padding: 10px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; font-size: 0.8rem; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-primary { background: var(--accent); color: white; width: 100%; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+
+        input, textarea { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); color: var(--text); margin-top: 10px; box-sizing: border-box; font-family: inherit; }
+        #launch-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: none; flex-direction: column; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body id="main-body">
+
+<nav>
+    <div class="brand">
+        <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <path d="M50 90V60M50 60C50 60 20 55 20 35C20 15 50 10 50 10C50 10 80 15 80 35C80 55 50 60 50 60Z" stroke-width="8" stroke-linecap="round" fill="none"/>
+            <rect x="35" y="80" width="30" height="10" rx="2"/>
+            <path d="M 45 90 C 42 92, 40 94, 38 96" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M 50 90 C 50 93, 50 96, 50 98" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M 55 90 C 58 92, 60 94, 62 96" stroke-width="3" stroke-linecap="round" fill="none"/>
+        </svg>
+        ZEED
+    </div>
+    <div class="nav-items">
+        <button id="nav-vault" onclick="showPage('vault')">Vault</button>
+        <button id="nav-orchard" onclick="showPage('orchard')">Orchard</button>
+        <button id="nav-architect" onclick="showPage('architect')">Forge</button>
+        <button id="nav-help" onclick="showPage('help')">Docs</button>
+        <button id="nav-settings" onclick="showPage('settings')">Settings</button>
+    </div>
+    <button style="background:none; border:none; cursor:pointer; font-size:1.4rem;" onclick="toggleTheme()">🌓</button>
+</nav>
+
+<div class="wrapper">
+    <div id="page-vault" class="page-content">
+        <div class="panel" style="padding: 15px 30px;">
+            <input type="text" id="vaultSearch" placeholder="🔍 Search active tools..." onkeyup="renderGrid()" style="margin:0; border:none; background:transparent;">
+        </div>
+        <div id="appGrid" class="app-grid"></div>
+    </div>
+
+    <div id="page-help" class="page-content hidden">
+        <div class="panel">
+            <h2>ZEED Documentation</h2>
+            <p style="color:var(--muted)">v6.0 | Commercial Launch Edition</p>
+            
+            <div class="legal-header">⚖️ Terms of Service & License</div>
+            <div class="legal-box">
+                <b>1. OWNERSHIP</b><br>
+                ZEED and the "Rooted Sprout" logo are protected trademarks. The software, including its unique architecture and integrated logic, is the Intellectual Property of Suh-weet Joe (2026).<br><br>
+                <b>2. USAGE LICENSE</b><br>
+                Users are granted a non-exclusive license to use this platform for personal or internal business purposes. Reselling, redistribution of the core code, or unauthorized branding is strictly prohibited.<br><br>
+                <b>3. NO WARRANTY (AS-IS)</b><br>
+                This software is provided "AS-IS" without warranties of any kind. The creator is not liable for data loss, API costs incurred through third-party providers (OpenAI/Google), or software interruptions.<br><br>
+                <b>4. PRIVACY</b><br>
+                ZEED operates locally. No tool data or API secrets are stored on external servers by ZEED unless explicitly configured by the user via a third-party Cloud Sync provider.
+            </div>
+            
+            <p style="text-align:center; font-size:0.75rem; color:var(--muted); margin-top:20px;">© 2026 Suh-weet Joe. All Rights Reserved.</p>
+        </div>
+    </div>
+
+    <div id="page-architect" class="page-content hidden">
+        <div class="panel"><h3>The Forge</h3><textarea id="jsonInput" rows="6" placeholder="Paste Seed JSON..."></textarea><button class="btn btn-primary" onclick="saveApp()" style="margin-top:20px; background:var(--success)">Plant Seed</button></div>
+    </div>
+    <div id="page-orchard" class="page-content hidden"><div id="officialGrid" class="app-grid"></div></div>
+    <div id="page-settings" class="page-content hidden">
+        <div class="panel"><h3>🔑 Zeed Secrets</h3><div id="secretsList"></div></div>
+        <div class="panel"><h3>💾 System Management</h3><button class="btn btn-outline" onclick="exportVault()" style="width:100%">Download Snapshot</button></div>
+    </div>
+</div>
+
+<div id="launch-overlay">
+    <div style="height:75px; border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 30px; justify-content:space-between;">
+        <span id="currentAppName" style="font-weight:900; color:var(--accent); letter-spacing:1px;"></span>
+        <button class="btn btn-outline" onclick="closeApp()">Exit Tool ×</button>
+    </div>
+    <iframe id="appFrame" style="flex:1; border:none;" sandbox="allow-scripts allow-forms allow-modals"></iframe>
+</div>
+
+<script>
+    let myApps = JSON.parse(localStorage.getItem('zeed_apps')) || [];
+    let mySecrets = JSON.parse(localStorage.getItem('zeed_secrets')) || {};
+
+    function toggleTheme() { document.getElementById('main-body').classList.toggle('dark'); localStorage.setItem('zeed_dark_mode', document.getElementById('main-body').classList.contains('dark')); }
+    if(localStorage.getItem('zeed_dark_mode') === 'true') document.getElementById('main-body').classList.add('dark');
+
+    function showPage(id) {
+        document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
+        document.getElementById('page-' + id).classList.remove('hidden');
+        document.querySelectorAll('.nav-items button').forEach(b => b.classList.remove('active'));
+        document.getElementById('nav-' + id).classList.add('active');
+        if(id === 'vault') renderGrid();
+        if(id === 'settings') renderSecrets();
+    }
+
+    function renderGrid() {
+        const query = document.getElementById('vaultSearch').value.toLowerCase();
+        const grid = document.getElementById('appGrid');
+        grid.innerHTML = myApps.filter(a => a.appName.toLowerCase().includes(query)).map((a, i) => `
+            <div class="app-card">
+                <div style="font-size:3rem; margin-bottom:15px;">${a.appIcon || '🌱'}</div>
+                <h3 style="margin:0 0 20px 0; font-weight:900;">${a.appName}</h3>
+                <button class="btn btn-primary" onclick="launchApp(${myApps.indexOf(a)})">Launch</button>
+                <div style="display:flex; gap:5px; margin-top:10px;">
+                    <button class="btn btn-outline" onclick="duplicateApp(${myApps.indexOf(a)})">Clone</button>
+                    <button class="btn btn-outline" style="color:var(--danger);" onclick="deleteApp(${myApps.indexOf(a)})">×</button>
+                </div>
+            </div>`).join('') || "<p style='grid-column:1/-1; text-align:center; padding:50px; opacity:0.5;'>Vault Empty.</p>";
+    }
+
+    function launchApp(i) {
+        const a = myApps[i];
+        document.getElementById('currentAppName').innerText = a.appName.toUpperCase();
+        document.getElementById('appFrame').srcdoc = `<script>window.APPULATOR_SECRETS = ${JSON.stringify(mySecrets)};<\/script>` + a.rawHTML;
+        document.getElementById('launch-overlay').style.display = 'flex';
+    }
+
+    function renderSecrets() {
+        document.getElementById('secretsList').innerHTML = Object.keys(mySecrets).map(k => `<div style="margin-bottom:15px;"><b style="font-size:0.85rem;">${k}</b><input type="password" value="${mySecrets[k]}" onchange="mySecrets['${k}']=this.value; saveAll()"></div>`).join('') || "<p>No secrets.</p>";
+    }
+
+    function saveApp() { try { const d = JSON.parse(document.getElementById('jsonInput').value); myApps.push(d); saveAll(); showPage('vault'); document.getElementById('jsonInput').value = ''; } catch(e){ alert("Bad DNA"); } }
+    function saveAll() { localStorage.setItem('zeed_apps', JSON.stringify(myApps)); localStorage.setItem('zeed_secrets', JSON.stringify(mySecrets)); }
+    function closeApp() { document.getElementById('launch-overlay').style.display = 'none'; }
+    function deleteApp(i) { if(confirm("Destroy Zeed?")) { myApps.splice(i, 1); saveAll(); renderGrid(); } }
+    function duplicateApp(i) { const c = JSON.parse(JSON.stringify(myApps[i])); c.appName += " (Copy)"; myApps.push(c); saveAll(); renderGrid(); }
+    function exportVault() { const b = new Blob([JSON.stringify({apps:myApps, secrets:mySecrets})], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'zeed_snapshot.json'; a.click(); }
+    function wipeData() { if(confirm("Wipe?")) { localStorage.clear(); location.reload(); } }
+
+    showPage('vault');
+</script>
+</body>
+</html>
